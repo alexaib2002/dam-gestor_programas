@@ -8,7 +8,7 @@ import javax.print.attribute.standard.PresentationDirection;
 import java.io.IOException;
 
 public class ProgramRunner {
-    public void ProgramRunner(String programName) {
+    public ProgramRunner(String programName) {
         try {
 
             ProcessBuilder pb = new ProcessBuilder(programName);
