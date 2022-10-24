@@ -1,5 +1,6 @@
 package org.uem.dam.GestorProg.ui.control;
 
+import org.uem.dam.GestorProg.persist.Persistence;
 import org.uem.dam.GestorProg.ui.view.MainWindow;
 
 import java.util.Map;
@@ -20,6 +21,7 @@ public class MainController {
     );
 
     public void onStart() {
+        mainWindow.insertElementsOnHistory(Persistence.readHistoryElements());
         for (Map.Entry<String, String> program: availPrograms.entrySet()) {
             mainWindow.addNewProgram(program);
         }

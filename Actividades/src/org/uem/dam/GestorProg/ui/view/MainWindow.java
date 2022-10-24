@@ -1,12 +1,18 @@
 package org.uem.dam.GestorProg.ui.view;
 
+import org.uem.dam.GestorProg.persist.Persistence;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 public class MainWindow extends JFrame {
@@ -50,24 +56,41 @@ public class MainWindow extends JFrame {
         });
     }
 
+    public void insertElementsOnHistory(ArrayList<String> elements) {
+        for (String element: elements) {
+            historyListModel.addElement(element);
+        }
+    }
+
     private void prepareCallbacks() {
-        searchBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                try {
-                    String url = urlTxtField.getText();
-                    // comprobar si la url contiene el protocolo
-                    if (!url.startsWith("http://") || !url.startsWith("https://")) {
-                        url = "http://" + url;
-                    }
-                    Desktop.getDesktop().browse(new URI(url));
-                    historyListModel.addElement(urlTxtField.getText());
-                } catch (IOException e) {
-                    JOptionPane.showConfirmDialog(null, "Error de E/S");
-                } catch (URISyntaxException e) {
-                    throw new RuntimeException(e);
+        searchBtn.addActionListener(actionEvent -> {
+            try {
+                String url = urlTxtField.getText();
+                // comprobar si la url contiene el protocolo
+                if (!url.startsWith("http://") || !url.startsWith("https://")) {
+                    url = "http://" + url;
                 }
+                Desktop.getDesktop().browse(new URI(url));
+                historyListModel.addElement(urlTxtField.getText());
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "Error de E/S");
+            } catch (URISyntaxException e) {
+                JOptionPane.showMessageDialog(null, "La URL no contiene una sintaxis valida (https://www.example.net)");
+            } catch (UnsupportedOperationException e) {
+                JOptionPane.showMessageDialog(null, "Tu sistema no permite abrir una ventana en el navegador");
+            }
+        });
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                ArrayList<String> elements = new ArrayList<>(historyListModel.getSize());
+                for (int i = 0; i<historyListModel.getSize(); i++) {
+                    elements.add(historyListModel.getElementAt(i));
+                }
+                Persistence.writeHistoryElements(elements);
+                e.getWindow().dispose();
             }
         });
     }
+
 }
