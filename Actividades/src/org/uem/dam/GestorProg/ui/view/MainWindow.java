@@ -80,6 +80,11 @@ public class MainWindow extends JFrame {
                 JOptionPane.showMessageDialog(null, "Tu sistema no permite abrir una ventana en el navegador");
             }
         });
+        historyList.addListSelectionListener((listSelectionEvent) -> {
+            if (listSelectionEvent.getValueIsAdjusting()) {
+                urlTxtField.setText(historyListModel.get(historyList.getSelectedIndex()));
+            }
+        });
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
